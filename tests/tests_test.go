@@ -7,10 +7,12 @@ import (
 	"path/filepath"
 	"time"
 
+	gbase8s "gitee.com/GBase8s/gorm-gbase"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/driver/sqlserver"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	. "gorm.io/gorm/utils/tests"
@@ -22,6 +24,7 @@ var (
 	postgresDSN  = "user=gorm password=gorm dbname=gorm host=localhost port=9920 sslmode=disable TimeZone=Asia/Shanghai"
 	sqlserverDSN = "sqlserver://gorm:LoremIpsum86@localhost:9930?database=gorm"
 	tidbDSN      = "root:@tcp(localhost:9940)/test?charset=utf8&parseTime=True&loc=Local"
+	gbaseDSN     = "gbase8s://gbasedbt/GBase123@Dsn3"
 )
 
 func init() {
@@ -84,6 +87,12 @@ func OpenTestConnection(cfg *gorm.Config) (db *gorm.DB, err error) {
 			dbDSN = tidbDSN
 		}
 		db, err = gorm.Open(mysql.Open(dbDSN), cfg)
+	case "gbase8s":
+		log.Println("testing gbase8s...")
+		if dbDSN == "" {
+			dbDSN = gbaseDSN
+		}
+		db, err = gorm.Open(gbase8s.Open(gbaseDSN))
 	default:
 		log.Println("testing sqlite3...")
 		db, err = gorm.Open(sqlite.Open(filepath.Join(os.TempDir(), "gorm.db")), cfg)
